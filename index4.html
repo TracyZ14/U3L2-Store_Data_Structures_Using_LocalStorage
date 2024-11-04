@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>        
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"> </script>
+        <style>
+         button {
+            border-radius: 25px;
+            background-color: lightgray;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor:pointer;
+            padding: 15px;
+            transition: background-color 1s ease-out;
+        }
+        
+        hr {
+            width:100%;
+        }
+        button:hover {
+            background-color: green;
+        }
+        
+        button:focus {
+            outline: none;
+        }
+        
+        #container, #previous-scores {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div id = container>
+            <h2>Your Score Tracker</h2>
+            <button id = record-score>Record a score!</button>
+            <p id = latest-score></p>
+            <hr>
+        </div>
+        <div id = "previous-scores"></div>
+
+        <script>
+            let recordScoreBtn = document.getElementById("record-score");
+
+            let latestScore = document.getElementById("latest-score");
+            let previousScores = document.getElementById("previous-scores");
+
+            function recordScore() {
+                let newScore = prompt("What is your new score?");
+                let newScoreDate = prompt("When did you get this score?");
+
+                let score = newScore + " (" + newScoreDate + ")";
+
+                localStorage.setItem("latestScore", score);
+
+                latestScore.innerHTML = "Latest score: " + score;
+
+                if(localStorage.previousScoresList) {
+                    let scoresList = JSON.parse(localStorage.previousScoresList);
+                    scoresList.push(newScore);
+
+                    localStorage.setItem("previousScoresList", JSON.stringify(scoresList));
+
+                    let datesList = JSON.parse(localStorage.previousScoresDatesList);
+                    datesList.push(newScoreDate);
+
+                    localStorage.setItem("previousScoresDatesList", JSON.stringify(datesList));
+
+                    let listOfScores = "Previous scores:";
+                    for(let i = 0; i < scoresList.length; i++) {
+                        if(i != 0) {
+                            listOfScores = listOfScores + ",";
+                        }
+                        listOfScores = listOfScores + " " + scoresList[i] + " (" + datesList[i] + ")";
+                    }
+                    previousScores.innerHTML = listOfScores;
+                } else {
+                    let scoresList = [newScore];
+                    localStorage.setItem("previousScoresList", JSON.stringify(scoresList));
+
+                    let datesList = [newScoreDate];
+                    localStorage.setItem("previousScoresDatesList", JSON.stringify(datesList));
+
+                    previousScores.innerHTML = "Previous scores: " + newScore + " (" + newScoreDate + ")";
+                }
+            }
+
+            recordScoreBtn.addEventListener("click", recordScore);
+        </script>
+    </body>
+</html>
